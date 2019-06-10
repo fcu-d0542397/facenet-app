@@ -1,16 +1,13 @@
-# flutter_app
+# 逢甲畢業專題 臉部辨識點名
 
-A new Flutter application.
+- Model: Google Facenet, MTCNN
+- App: Flutter, ffmpeg
+- Backend: 
 
-## Getting Started
+## 組員
 
-This project is a starting point for a Flutter application.
+- 資訊三乙 蔡凱勛
+- 資訊三乙 時昱安
+- 資訊三乙 郭政儒
+- 資訊三乙 陳逸銘
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
