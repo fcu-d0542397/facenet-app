@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'camera.dart' as camera;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -139,6 +140,8 @@ class _HomePageState extends State<StatefulWidget> {
                                 TextStyle(fontSize: 20, color: Colors.white)),
                         onPressed: () {
                           print('start pressed');
+                          // Navigator.pushNamed(context, '/camera');
+                          camera.main();
                         },
                       ),
                     ),
