@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
             // padding: EdgeInsets.only(left: 30.0, right: 30.0),
             children: [
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Container(
                   child: Center(
                       child: Text('臉部點名系統',

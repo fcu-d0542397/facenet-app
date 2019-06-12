@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:simple_permissions/simple_permissions.dart';
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -71,11 +72,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           children: <Widget>[
             Expanded(
               child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Center(
-                    child: _cameraPreviewWidget(),
-                  ),
+                child: Center(
+                  child: _cameraPreviewWidget(),
                 ),
                 decoration: BoxDecoration(
                   color: Colors.black,
@@ -140,11 +138,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.blue[600],
-                  width: 10,
+                  width: 15,
                 ),
               ),
             ),
-            // Container(color: Colors.red),
           ]);
     }
   }
@@ -174,8 +171,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.pink)),
                           ),
-                    width: 64.0,
-                    height: 64.0,
+                    width: 48.0,
+                    height: 48.0,
                   ),
           ],
         ),
@@ -198,24 +195,24 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ? onTakePictureButtonPressed
               : null,
         ),
-        IconButton(
-          icon: const Icon(Icons.videocam),
-          color: Colors.blue,
-          onPressed: controller != null &&
-                  controller.value.isInitialized &&
-                  !controller.value.isRecordingVideo
-              ? onVideoRecordButtonPressed
-              : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.stop),
-          color: Colors.red,
-          onPressed: controller != null &&
-                  controller.value.isInitialized &&
-                  controller.value.isRecordingVideo
-              ? onStopButtonPressed
-              : null,
-        )
+        // IconButton(
+        //   icon: const Icon(Icons.videocam),
+        //   color: Colors.blue,
+        //   onPressed: controller != null &&
+        //           controller.value.isInitialized &&
+        //           !controller.value.isRecordingVideo
+        //       ? onVideoRecordButtonPressed
+        //       : null,
+        // ),
+        // IconButton(
+        //   icon: const Icon(Icons.stop),
+        //   color: Colors.red,
+        //   onPressed: controller != null &&
+        //           controller.value.isInitialized &&
+        //           controller.value.isRecordingVideo
+        //       ? onStopButtonPressed
+        //       : null,
+        // )
       ],
     );
   }
@@ -314,7 +311,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
-    final Directory extDir = await getApplicationDocumentsDirectory();
+    final Directory extDir = await getExternalStorageDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
     await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
@@ -377,7 +374,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       showInSnackBar('Error: select a camera first.');
       return null;
     }
-    final Directory extDir = await getApplicationDocumentsDirectory();
+    final Directory extDir = await getExternalStorageDirectory();
+    print(extDir.path);
     final String dirPath = '${extDir.path}/Pictures/flutter_test';
     await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.jpg';
@@ -417,6 +415,12 @@ Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
     cameras = await availableCameras();
+    PermissionStatus permissionResult =
+        await SimplePermissions.requestPermission(
+            Permission.WriteExternalStorage);
+    if (permissionResult == PermissionStatus.authorized) {
+      // code of read or write file in external storage (SD card)
+    }
   } on CameraException catch (e) {
     logError(e.code, e.description);
   }
