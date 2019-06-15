@@ -312,7 +312,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
 
     final Directory extDir = await getExternalStorageDirectory();
-    final String dirPath = '${extDir.path}/Movies/flutter_test';
+    final String dirPath = '${extDir.path}/Movies/facenet_app';
     await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
 
@@ -376,7 +376,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
     final Directory extDir = await getExternalStorageDirectory();
     print(extDir.path);
-    final String dirPath = '${extDir.path}/Pictures/flutter_test';
+    final String dirPath = '${extDir.path}/Pictures/facenet_app';
     await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.jpg';
 
@@ -411,18 +411,15 @@ class CameraApp extends StatelessWidget {
 
 List<CameraDescription> cameras;
 
-Future<void> main() async {
+Future<void> init() async {
   // Fetch the available cameras before initializing the app.
   try {
     cameras = await availableCameras();
-    PermissionStatus permissionResult =
-        await SimplePermissions.requestPermission(
-            Permission.WriteExternalStorage);
-    if (permissionResult == PermissionStatus.authorized) {
-      // code of read or write file in external storage (SD card)
-    }
+    await SimplePermissions.requestPermission(Permission.WriteExternalStorage);
+    await SimplePermissions.requestPermission(Permission.Camera);
+    await SimplePermissions.requestPermission(Permission.RecordAudio);
   } on CameraException catch (e) {
     logError(e.code, e.description);
   }
-  runApp(CameraApp());
+  // runApp(CameraApp());
 }

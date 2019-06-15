@@ -138,10 +138,10 @@ class _HomePageState extends State<StatefulWidget> {
                         child: Text('開始點名',
                             style:
                                 TextStyle(fontSize: 20, color: Colors.white)),
-                        onPressed: () {
+                        onPressed: () async {
                           print('start pressed');
-                          // Navigator.pushNamed(context, '/camera');
-                          camera.main();
+                          await camera.init();
+                          Navigator.pushNamed(context, '/camera');
                         },
                       ),
                     ),
