@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'camera.dart' as camera;
+import 'socket.dart' as socket;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -61,12 +62,6 @@ class _HomePageState extends State<StatefulWidget> {
                           margin: (idx == namelist.length - 1)
                               ? EdgeInsets.only(bottom: 65)
                               : null,
-                          shape: new RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: Color(0xFF4B4BD8),
-                                  width: 2,
-                                  style: BorderStyle.solid),
-                              borderRadius: new BorderRadius.circular(10.0)),
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: Container(
@@ -78,7 +73,7 @@ class _HomePageState extends State<StatefulWidget> {
                                   child: Container(
                                     child: ClipOval(
                                       child: Image.asset(
-                                        'assets/image.jpg',
+                                        'assets/man.png',
                                         fit: BoxFit.cover,
                                       ),
                                     ),

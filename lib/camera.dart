@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:simple_permissions/simple_permissions.dart';
+import 'package:image/image.dart' as imglib;
+import 'package:flutter/services.dart';
+import 'socket.dart' as socket;
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -37,6 +40,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   String videoPath;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
+
+  static const platform = const MethodChannel('flutter_app.example.com');
 
   @override
   void initState() {
@@ -79,7 +84,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   color: Colors.black,
                   border: Border.all(
                     color:
-                        controller != null && controller.value.isRecordingVideo
+                        controller != null && controller.value.isStreamingImages
                             ? Colors.redAccent
                             : Colors.grey,
                     width: 3.0,
@@ -191,28 +196,28 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           color: Colors.blue,
           onPressed: controller != null &&
                   controller.value.isInitialized &&
-                  !controller.value.isRecordingVideo
+                  !controller.value.isStreamingImages
               ? onTakePictureButtonPressed
               : null,
         ),
-        // IconButton(
-        //   icon: const Icon(Icons.videocam),
-        //   color: Colors.blue,
-        //   onPressed: controller != null &&
-        //           controller.value.isInitialized &&
-        //           !controller.value.isRecordingVideo
-        //       ? onVideoRecordButtonPressed
-        //       : null,
-        // ),
-        // IconButton(
-        //   icon: const Icon(Icons.stop),
-        //   color: Colors.red,
-        //   onPressed: controller != null &&
-        //           controller.value.isInitialized &&
-        //           controller.value.isRecordingVideo
-        //       ? onStopButtonPressed
-        //       : null,
-        // )
+        IconButton(
+          icon: const Icon(Icons.videocam),
+          color: Colors.blue,
+          onPressed: controller != null &&
+                  controller.value.isInitialized &&
+                  !controller.value.isStreamingImages
+              ? onVideoRecordButtonPressed
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.stop),
+          color: Colors.red,
+          onPressed: controller != null &&
+                  controller.value.isInitialized &&
+                  controller.value.isStreamingImages
+              ? onStopButtonPressed
+              : null,
+        )
       ],
     );
   }
@@ -256,7 +261,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
     controller = CameraController(
       cameraDescription,
-      ResolutionPreset.low,
+      ResolutionPreset.high,
     );
 
     // If the controller is updated then update the UI.
@@ -294,7 +299,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((String filePath) {
       if (mounted) setState(() {});
-      if (filePath != null) showInSnackBar('Saving video to $filePath');
+      // if (filePath != null) showInSnackBar('Saving video to $filePath');
     });
   }
 
@@ -311,33 +316,111 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return null;
     }
 
-    final Directory extDir = await getExternalStorageDirectory();
-    final String dirPath = '${extDir.path}/Movies/facenet_app';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${timestamp()}.mp4';
-
-    if (controller.value.isRecordingVideo) {
+    if (controller.value.isStreamingImages) {
       // A recording is already started, do nothing.
       return null;
     }
 
     try {
-      videoPath = filePath;
-      await controller.startVideoRecording(filePath);
+      controller.startImageStream((CameraImage img) async {
+        controller.stopImageStream();
+        Map imageMap = cameraImagetoMap(img);
+        List<int> results = await platform.invokeMethod('convert', imageMap);
+        print("aaaaaaaaaaaaa$results");
+        await socket.main(results);
+      });
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
     }
-    return filePath;
+    // return filePath;
+    return null;
   }
 
+  Map cameraImagetoMap(CameraImage image) {
+    var imageMap = new Map();
+    imageMap['planes'] = new List(3);
+    for (int i = 0; i < image.planes.length; i++) {
+      var value = {};
+      value['bytes'] = image.planes[i].bytes;
+      value['bytesPerRow'] = image.planes[i].bytesPerRow;
+      value['height'] = image.planes[i].height;
+      value['width'] = image.planes[i].width;
+      imageMap['planes'][i] = value;
+    }
+    imageMap['height'] = image.height;
+    imageMap['width'] = image.width;
+    return imageMap;
+  }
+
+  void savePicture(List<int> intArray) async {
+    final Directory extDir = await getExternalStorageDirectory();
+    final String dirPath = '${extDir.path}/Pictures/facenet_app';
+    await Directory(dirPath).create(recursive: true);
+    final String filePath = '$dirPath/${timestamp()}.jpg';
+    File('$filePath').writeAsBytesSync(intArray);
+  }
+
+  // using cpu thread to run this is WAY TOO SLOW
+  // Future<List<int>> convertYUV420toImage(CameraImage image) async {
+  //   final Directory extDir = await getExternalStorageDirectory();
+  //   final String dirPath = '${extDir.path}/Pictures/facenet_app';
+  //   await Directory(dirPath).create(recursive: true);
+  //   final String filePath = '$dirPath/${timestamp()}.jpg';
+  //   try {
+  //     final int width = image.width;
+  //     final int height = image.height;
+  //     final int uvRowStride = image.planes[1].bytesPerRow;
+  //     final int uvPixelStride = image.planes[1].bytesPerPixel;
+
+  //     print("uvRowStride: " + uvRowStride.toString());
+  //     print("uvPixelStride: " + uvPixelStride.toString());
+
+  //     // imgLib -> Image package from https://pub.dartlang.org/packages/image
+  //     var img = imglib.Image(width, height); // Create Image buffer
+
+  //     // Fill image buffer with plane[0] from YUV420_888
+  //     for (int x = 0; x < width; x++) {
+  //       for (int y = 0; y < height; y++) {
+  //         final int uvIndex =
+  //             uvPixelStride * (x / 2).floor() + uvRowStride * (y / 2).floor();
+  //         final int index = y * width + x;
+
+  //         final yp = image.planes[0].bytes[index];
+  //         final up = image.planes[1].bytes[uvIndex];
+  //         final vp = image.planes[2].bytes[uvIndex];
+  //         // Calculate pixel color
+  //         int r = (yp + vp * 1436 / 1024 - 179).round().clamp(0, 255);
+  //         int g = (yp - up * 46549 / 131072 + 44 - vp * 93604 / 131072 + 91)
+  //             .round()
+  //             .clamp(0, 255);
+  //         int b = (yp + up * 1814 / 1024 - 227).round().clamp(0, 255);
+  //         // color: 0x FF  FF  FF  FF
+  //         //           A   B   G   R
+  //         img.data[index] = (0xFF << 24) | (b << 16) | (g << 8) | r;
+  //       }
+  //     }
+
+  //     // Convert to png using pngencoder
+  //     imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0, filter: 0);
+  //     // img = imglib.copyResize(img, width: 480);
+  //     List<int> png = pngEncoder.encodeImage(img);
+  //     print(png.length);
+  //     File('$filePath').writeAsBytesSync(png);
+  //     return png;
+  //   } catch (e) {
+  //     print("ERROR:" + e.toString());
+  //   }
+  //   return null;
+  // }
+
   Future<void> stopVideoRecording() async {
-    if (!controller.value.isRecordingVideo) {
+    if (!controller.value.isStreamingImages) {
       return null;
     }
 
     try {
-      await controller.stopVideoRecording();
+      await controller.stopImageStream();
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;

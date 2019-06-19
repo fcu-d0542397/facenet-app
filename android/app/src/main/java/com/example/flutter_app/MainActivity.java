@@ -1,13 +1,98 @@
 package com.example.flutter_app;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicYuvToRGB;
+import android.renderscript.Type;
+
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
 
 public class MainActivity extends FlutterActivity {
+  private static final String CHANNEL = "flutter_app.example.com";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
+    new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(new MethodCallHandler() {
+      @Override
+      public void onMethodCall(MethodCall call, Result result) {
+        if (call.method.equals("convert")) {
+          RenderScript rs = RenderScript.create(getBaseContext());
+
+          HashMap imageData = call.arguments();
+
+          int w = (int) imageData.get("width");
+          int h = (int) imageData.get("height");
+          ArrayList<Map> planes = (ArrayList) imageData.get("planes");
+
+          byte[] data = packYUV420asNV21(w, h, planes);
+
+          Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+          ScriptIntrinsicYuvToRGB yuvToRgbIntrinsic = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
+
+          Type.Builder yuvType = new Type.Builder(rs, Element.U8(rs)).setX(data.length);
+          Allocation in = Allocation.createTyped(rs, yuvType.create(), Allocation.USAGE_SCRIPT);
+          in.copyFrom(data);
+
+          Type.Builder rgbaType = new Type.Builder(rs, Element.RGBA_8888(rs)).setX(w).setY(h);
+          Allocation out = Allocation.createTyped(rs, rgbaType.create(), Allocation.USAGE_SCRIPT);
+
+          yuvToRgbIntrinsic.setInput(in);
+          yuvToRgbIntrinsic.forEach(out);
+          out.copyTo(bitmap);
+          int width = bitmap.getWidth();
+          int height = bitmap.getHeight();
+          int[] store = new int[width * height];
+          bitmap.getPixels(store, 0, width, 0, 0, width, height);
+          result.success(store);
+        } else {
+          result.notImplemented();
+        }
+      }
+    });
+  }
+
+  public byte[] packYUV420asNV21(int width, int height, ArrayList<Map> planes) {
+    byte[] yBytes = (byte[]) planes.get(0).get("bytes"), uBytes = (byte[]) planes.get(1).get("bytes"),
+        vBytes = (byte[]) planes.get(2).get("bytes");
+    System.out.println(planes.get(1));
+    final int color_pixel_stride = (int) planes.get(1).get("bytesPerRow");
+
+    ByteArrayOutputStream outputbytes = new ByteArrayOutputStream();
+    try {
+      outputbytes.write(yBytes);
+      outputbytes.write(vBytes);
+      outputbytes.write(uBytes);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    byte[] data = outputbytes.toByteArray();
+    final int y_size = yBytes.length;
+    final int u_size = uBytes.length;
+    final int data_offset = width * height;
+    for (int i = 0; i < y_size; i++) {
+      data[i] = (byte) (yBytes[i] & 255);
+    }
+    for (int i = 0; i < u_size / color_pixel_stride; i++) {
+      data[data_offset + 2 * i] = vBytes[i * color_pixel_stride];
+      data[data_offset + 2 * i + 1] = uBytes[i * color_pixel_stride];
+    }
+    return data;
   }
 }
