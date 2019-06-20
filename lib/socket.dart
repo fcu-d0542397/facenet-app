@@ -1,13 +1,18 @@
-import 'package:flutter/services.dart';
-import 'package:web_socket_channel/io.dart';
+import 'dart:io';
+import 'dart:math';
 
 main(List<int> img) async {
-  final channel = IOWebSocketChannel.connect('ws://192.168.100.3:9999');
   print(img);
+  Socket socket = await Socket.connect('192.168.100.3', 9999);
+  List<int> msg = [];
+  int temp;
+  for (int i = 0; i < 8; i++) {
+    temp = img.length & (0xff << (i * 8));
+    temp = temp ~/ pow(256, i);
+    msg.add(temp);
+  }
   print(img.length);
-  channel.stream.listen((message) {
-    channel.sink.add(img.length);
-    channel.sink.add(img);
-    channel.sink.close();
-  });
+  socket.add(msg);
+  socket.add(img);
+  socket.close();
 }

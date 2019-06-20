@@ -5,6 +5,7 @@ import 'home.dart';
 import 'register.dart';
 import 'camera.dart';
 import 'buttons/buttons.dart';
+import 'socket.dart' as socket;
 // import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 void main() => runApp(MaterialApp(initialRoute: '/', routes: {

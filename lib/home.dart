@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'camera.dart' as camera;
-import 'socket.dart' as socket;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);

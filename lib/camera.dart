@@ -325,9 +325,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       controller.startImageStream((CameraImage img) async {
         controller.stopImageStream();
         Map imageMap = cameraImagetoMap(img);
-        List<int> results = await platform.invokeMethod('convert', imageMap);
-        print("aaaaaaaaaaaaa$results");
-        await socket.main(results);
+        List<int> bitmap = await platform.invokeMethod('convert', imageMap);
+        await socket.main(bitmap);
+        savePicture(bitmap);
       });
     } on CameraException catch (e) {
       _showCameraException(e);
