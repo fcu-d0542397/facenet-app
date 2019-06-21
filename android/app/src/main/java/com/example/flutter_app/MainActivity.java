@@ -108,28 +108,4 @@ public class MainActivity extends FlutterActivity {
     }
     return data;
   }
-
-  public rtmpStream() {
-    SrsCameraView cameraView = (SrsCameraView) findViewById(R.id.glsurfaceview_camera)
-    mPublisher = new SrsPublisher(cameraView);
-    //编码状态回调
-    mPublisher.setEncodeHandler(new SrsEncodeHandler(this));
-    mPublisher.setRecordHandler(new SrsRecordHandler(this));
-    //rtmp推流状态回调
-    mPublisher.setRtmpHandler(new RtmpHandler(this));
-    //预览分辨率
-    mPublisher.setPreviewResolution(1280, 720);
-    //推流分辨率
-    mPublisher.setOutputResolution(720, 1280);
-    //传输率
-    mPublisher.setVideoHDMode();
-    //开启美颜（其他滤镜效果在MagicFilterType中查看）
-    mPublisher.switchCameraFilter(MagicFilterType.BEAUTY);
-    //打开摄像头，开始预览（未推流）
-    mPublisher.startCamera();
-    //mPublisher.switchToSoftEncoder();//选择软编码
-    mPublisher.switchToHardEncoder();//选择硬编码
-    //开始推流 rtmpUrl（ip换成服务器的部署ip）："rtmp://192.168.31.126/android/teststream"
-    mPublisher.startPublish(rtmpUrl);
-  }
 }

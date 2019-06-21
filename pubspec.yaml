@@ -23,7 +23,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  flutter_ffmpeg: 0.1.1 # LTS version for android 6.0
+  # flutter_ffmpeg: 0.1.1 # LTS version for android 6.0
   # camera: ^0.2.3
   camera: ^0.5.2+1
   video_player: ^0.10.1+3
