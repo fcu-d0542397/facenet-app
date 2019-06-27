@@ -54,71 +54,71 @@ class _HomePageState extends State<StatefulWidget> {
                   flex: 4,
                   child: Stack(alignment: Alignment.bottomCenter, children: [
                     ListView.builder(
-                      itemCount: namelist.length,
+                      itemCount: namelist.length + 1,
                       itemBuilder: (context, idx) {
-                        return Card(
-                          color: Colors.white,
-                          margin: (idx == namelist.length - 1)
-                              ? EdgeInsets.only(bottom: 65)
-                              : null,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Container(
-                              height: 80,
-                              alignment: Alignment.centerLeft,
-                              child: Row(children: <Widget>[
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    child: ClipOval(
-                                      child: Image.asset(
-                                        'assets/man.png',
-                                        fit: BoxFit.cover,
+                        if (idx == namelist.length)
+                          return Container(margin: EdgeInsets.all(30));
+                        else
+                          return Card(
+                            color: Colors.white,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Container(
+                                height: 80,
+                                alignment: Alignment.centerLeft,
+                                child: Row(children: <Widget>[
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          'assets/man.png',
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: ListTile(
-                                    title: Text(namelist[idx]['name']),
-                                    subtitle: Text(namelist[idx]['nid']),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: ClipOval(
-                                    child: FlatButton(
-                                      child: Icon(Icons.person,
-                                          color: Colors.black26),
-                                      onPressed: () {
-                                        print('profile pressed');
-                                      },
+                                  Expanded(
+                                    flex: 2,
+                                    child: ListTile(
+                                      title: Text(namelist[idx]['name']),
+                                      subtitle: Text(namelist[idx]['nid']),
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: FlatButton(
-                                    color: Colors.redAccent,
-                                    child: Icon(Icons.directions_run,
-                                        size: 20, color: Colors.white),
-                                    shape: new RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Colors.redAccent,
-                                            style: BorderStyle.solid),
-                                        borderRadius:
-                                            new BorderRadius.circular(30.0)),
-                                    onPressed: () {
-                                      String name = namelist[idx]['name'];
-                                      print('absent pressed - $name');
-                                    },
+                                  Expanded(
+                                    flex: 1,
+                                    child: ClipOval(
+                                      child: FlatButton(
+                                        child: Icon(Icons.person,
+                                            color: Colors.black26),
+                                        onPressed: () {
+                                          print('profile pressed');
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                )
-                              ]),
+                                  Expanded(
+                                    flex: 1,
+                                    child: FlatButton(
+                                      color: Colors.redAccent,
+                                      child: Icon(Icons.directions_run,
+                                          size: 20, color: Colors.white),
+                                      shape: new RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: Colors.redAccent,
+                                              style: BorderStyle.solid),
+                                          borderRadius:
+                                              new BorderRadius.circular(30.0)),
+                                      onPressed: () {
+                                        String name = namelist[idx]['name'];
+                                        print('absent pressed - $name');
+                                      },
+                                    ),
+                                  )
+                                ]),
+                              ),
                             ),
-                          ),
-                        );
+                          );
                       },
                     ),
                     Padding(

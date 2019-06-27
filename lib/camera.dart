@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:simple_permissions/simple_permissions.dart';
-import 'package:image/image.dart' as imglib;
+// import 'package:image/image.dart' as imglib;
 import 'package:flutter/services.dart';
 import 'socket.dart' as socket;
 

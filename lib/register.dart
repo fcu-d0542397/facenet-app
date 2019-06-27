@@ -1,8 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'camera.dart' as camera;
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
+  @override
+  RegisterPageState createState() {
+    return RegisterPageState();
+  }
+}
+
+class RegisterPageState extends State<RegisterPage> {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +42,34 @@ class RegisterPage extends StatelessWidget {
                         topRight: const Radius.circular(30.0),
                       ),
                     ),
-                    child: _formBody(context),
+                    child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: <Widget>[
+                          _formBody(context),
+                          Padding(
+                            padding: EdgeInsets.all(20),
+                            child: FlatButton(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              child: Text('Next',
+                                  style: TextStyle(
+                                      fontSize: 17, color: Colors.white)),
+                              color: Colors.indigoAccent,
+                              shape: new RoundedRectangleBorder(
+                                  side: BorderSide(color: Colors.indigoAccent),
+                                  borderRadius:
+                                      new BorderRadius.circular(30.0)),
+                              onPressed: () async {
+                                print("next step pressed");
+                                if (_formKey.currentState.validate()) {
+                                  ;
+                                  Navigator.pushNamed(
+                                      context, '/register/cameraTutorial');
+                                }
+                              },
+                            ),
+                          ),
+                        ]),
                   ),
                 ),
               ]),
@@ -46,19 +81,20 @@ class RegisterPage extends StatelessWidget {
   }
 
   Widget _formBody(BuildContext context) {
-    return Theme(
-        data: ThemeData(
-          hintColor: Colors.indigoAccent,
-        ),
-        child: Stack(alignment: Alignment.bottomRight, children: [
-          ListView(children: <Widget>[
+    return Form(
+        key: _formKey,
+        child: Theme(
+          data: ThemeData(
+            hintColor: Colors.indigoAccent,
+          ),
+          child: ListView(children: <Widget>[
             Container(
                 padding: EdgeInsets.only(
                     top: 30.0, left: 30.0, right: 30.0, bottom: 10.0),
                 child: Text('基本資料', style: TextStyle(color: Colors.grey))),
             Container(
                 padding: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
-                child: TextField(
+                child: TextFormField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: '姓名',
@@ -66,34 +102,38 @@ class RegisterPage extends StatelessWidget {
                 )),
             Container(
                 padding: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
-                child: TextField(
+                child: TextFormField(
                   decoration: InputDecoration(
                       border: OutlineInputBorder(), labelText: 'NID'),
                 )),
             Container(
                 padding: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
-                child: TextField(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(), labelText: '科系'),
+                )),
+            Container(
+                padding: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  validator: _gradeValidator,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(), labelText: '年級'),
+                )),
+            Container(
+                padding: EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
+                child: TextFormField(
                   obscureText: true,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(), labelText: 'Password'),
                 )),
           ]),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: FlatButton(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Text('Next',
-                  style: TextStyle(fontSize: 17, color: Colors.indigoAccent)),
-              shape: new RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.indigoAccent),
-                  borderRadius: new BorderRadius.circular(30.0)),
-              onPressed: () async {
-                print("next step pressed");
-                await camera.init();
-                Navigator.pushNamed(context, '/camera');
-              },
-            ),
-          )
-        ]));
+        ));
+  }
+
+  String _gradeValidator(String value) {
+    return (value == '1' || value == '2' || value == '3' || value == '4')
+        ? null
+        : 'Invalid input';
   }
 }
