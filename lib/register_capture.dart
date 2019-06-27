@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -10,10 +12,10 @@ import 'package:image/image.dart' as imglib;
 import 'package:flutter/services.dart';
 import 'socket.dart' as socket;
 
-class CameraExampleHome extends StatefulWidget {
+class RegisterCaptureHome extends StatefulWidget {
   @override
-  _CameraExampleHomeState createState() {
-    return _CameraExampleHomeState();
+  _RegisterCaptureHomeState createState() {
+    return _RegisterCaptureHomeState();
   }
 }
 
@@ -33,7 +35,7 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');
 
-class _CameraExampleHomeState extends State<CameraExampleHome>
+class _RegisterCaptureHomeState extends State<RegisterCaptureHome>
     with WidgetsBindingObserver {
   CameraController controller;
   String imagePath;
@@ -113,7 +115,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Widget _cameraPreviewWidget() {
     if (controller == null || !controller.value.isInitialized) {
       return const Text(
-        '於下方選擇鏡頭',
+        'Tap a camera',
         style: TextStyle(
           color: Colors.white,
           fontSize: 24.0,
@@ -483,11 +485,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 }
 
-class CameraApp extends StatelessWidget {
+class RegisterCapturePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CameraExampleHome(),
+      home: RegisterCapturePage(),
     );
   }
 }

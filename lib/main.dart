@@ -3,9 +3,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'home.dart';
 import 'register.dart';
+import 'register_capture.dart';
 import 'camera.dart';
 import 'buttons/buttons.dart';
-import 'socket.dart' as socket;
 // import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 
 void main() => runApp(MaterialApp(initialRoute: '/', routes: {
@@ -18,9 +18,12 @@ void main() => runApp(MaterialApp(initialRoute: '/', routes: {
       '/register': (context) {
         return RegisterPage();
       },
+      '/registerCapture': (context) {
+        return RegisterCapturePage();
+      },
       '/camera': (context) {
         return CameraApp();
-      }
+      },
     }));
 
 class LoginPage extends StatefulWidget {
@@ -123,14 +126,19 @@ class _LoginPageState extends State<LoginPage> {
                             },
                             shape: new RoundedRectangleBorder(
                                 side: BorderSide(
-                                    color: Colors.indigoAccent[400],
+                                    color: (loginType == 0)
+                                        ? Colors.indigoAccent[400]
+                                        : Colors.pink[400],
                                     width: 2,
                                     style: BorderStyle.solid),
                                 borderRadius: new BorderRadius.circular(30.0)),
                             color: Colors.white,
                             child: Text(loginTypeArray[loginType],
                                 style: TextStyle(
-                                    fontSize: 22, color: Color(0xFF4B4BD8)))),
+                                    fontSize: 22,
+                                    color: (loginType == 0)
+                                        ? Colors.indigoAccent[400]
+                                        : Colors.pink[400]))),
                       ),
                     ]),
               ),
