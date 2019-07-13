@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'camera.dart' as camera;
+import 'package:flutter_app/register.dart';
 
 class CameraTutorialPage extends StatelessWidget {
   @override
@@ -52,10 +53,11 @@ class CameraTutorialPage extends StatelessWidget {
                           onPressed: () async {
                             print("next step pressed");
                             await camera.init();
-                            Navigator.pushNamed(context, '/register/camera');
+                            Navigator.pushNamed(context, '/register/camera2');
                           },
                         ),
                       ),
+                      
                     ]),
                   ),
                 ),

@@ -10,6 +10,9 @@ import 'package:simple_permissions/simple_permissions.dart';
 import 'package:flutter/services.dart';
 import 'socket.dart' as socket;
 
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
+
 class CameraExampleHome extends StatefulWidget {
   @override
   _CameraExampleHomeState createState() {
@@ -108,6 +111,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       ),
     );
   }
+
+
+  
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
